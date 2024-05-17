@@ -488,7 +488,7 @@ void approval() {
     saveDatabase();
 }
 
-void feedback() {
+void feedback() { //di nagana -_-
     clrscr();
     ifstream feedbackFile ("feedback.txt");
     if (!feedbackFile) {
@@ -610,3 +610,4 @@ void main() {
     mainMenu();
     getch();
 }
+
