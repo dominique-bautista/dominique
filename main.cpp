@@ -222,7 +222,8 @@ void adminMenu() {
                 break;
             case 8:
                 isLoggedIn = 0;
-                return;
+                mainMenu();
+                break;
             case 9:
                 exit(0);
             default:
