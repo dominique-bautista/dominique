@@ -488,29 +488,23 @@ void approval() {
     saveDatabase();
 }
 
-void feedback() { //di nagana -_-
+void feedback() { //OK NA NAGANA NA BOI
     clrscr();
     ifstream feedbackFile ("feedback.txt");
     if (!feedbackFile) {
         cout << "No feedback available.\n";
+        getch();
         return;
     }
 
     char line[100];
     while (feedbackFile.getline(line, 100)) {
         cout << line << "\n";
+        cout << "Press any key to back to admin menu.";
+        getch();
+        adminMenu();
     }
     feedbackFile.close();
-
-    char response[100];
-    cout << "Enter your response to user feedback: ";
-    cin.ignore();
-    cin.getline(response, max_length);
-
-    ofstream responseFile ("feedback.txt", ios::app);
-    responseFile << "Admin Response: " << response << "\n";
-    responseFile.close();
-    cout << "Response saved.\n";
     getch();
 }
 
