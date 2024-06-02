@@ -10,23 +10,17 @@
 // max
 
 const int max_length = 100;
-// struct Feedback {
-//     char content[max_length];
-//     char username[max_length];
-    
-// };
-// Feedback feedbacks[100]; 
-// int feedbackCount = 0; 
 struct WordEntry
 {
     char word[max_length];
     char definition[max_length];
+    char category[max_length];
     char changedWord[max_length];
     char acronym[max_length];
     int approved;
 };
-const int max_entries = 100;
-WordEntry entries[max_entries]; // Now using the struct
+const int max_words = 100;
+WordEntry entries[max_words]; // Now using the struct
 int wordCount = 0;
 
 // accounts
@@ -55,13 +49,10 @@ void registerUser();
 void addAndEdit();
 int categorize();
 void approval();
-// void writeFeedback();
-// void readFeedback();
-// void deleteFeedback(int);
+void feedback();
 void manageUsers();
 void backup();
 void restore();
-void search_entries();
 
 // global variables
 int choice = 0, i = 0;
@@ -151,45 +142,7 @@ void saveUsers()
     }
     saveUsers.close();
 }
-// void saveFeedback() {
-//     ofstream outFile("feedback.txt");
-//     if (!outFile) {
-//         cout << "Unable to open file for writing.\n";
-//         return;
-//     }
 
-//     for (int i = 0; i < feedbackCount; i++) {
-//         outFile << feedbacks[i].username << ":" << feedbacks[i].content << "\n";
-//     }
-
-//     outFile.close();
-// }
-
-// void loadFeedback() {
-//     ifstream inFile("feedback.txt");
-//     if (!inFile) {
-//         cout << "Unable to open file for reading.\n";
-//         return;
-//     }
-
-//     feedbackCount = 0; // Reset feedback count
-//     char line[200]; // Buffer to hold each line
-//     while (inFile.getline(line, sizeof(line)) &&!inFile.eof()) {
-//         char* token = strtok(line, ":"); // Tokenize the line by colon
-//         if (token!= NULL) {
-//             strcpy(feedbacks[feedbackCount].username, token);
-//         }
-
-//         token = strtok(NULL, ":"); // Get the next token
-//         if (token!= NULL) {
-//             strcpy(feedbacks[feedbackCount].content, token);
-//         }
-
-//         feedbackCount++;
-//     }
-
-//     inFile.close();
-// }
 // displays
 
 void displayMainMenu()
@@ -207,14 +160,15 @@ void displayAdminMenu()
 {
     clrscr();
     cout << "Admin Menu\n";
-    cout << "1. Dictionary\n";
-    cout << "2. Approval Queue\n";
-    // cout << "3. Feedback Management\n";
-    cout << "3. Manage Users\n";
-    cout << "4. Backup Data\n";
-    cout << "5. Restore Data\n";
-    cout << "6. Logout\n";
-    cout << "7. Exit Program\n";
+    cout << "1. Add and Edit Words\n";
+    cout << "2. Categorize Words\n";
+    cout << "3. Approval Queue\n";
+    cout << "4. Feedback Management\n";
+    cout << "5. Manage Users\n";
+    cout << "6. Backup Data\n";
+    cout << "7. Restore Data\n";
+    cout << "8. Logout\n";
+    cout << "9. Exit Program\n";
     cout << "Enter Choice: \n";
 }
 
@@ -222,9 +176,8 @@ void displayUserMenu()
 {
     clrscr();
     cout << "User Menu\n";
-    cout << "1. Search for Gen Z entries\n";
+    cout << "1. Search for Gen Z Words\n";
     cout << "2. Dictionary\n";
-    // cout << "3.Write Feedback\n";
     cout << "3. Logout\n";
     cout << "4. Exit Program\n";
     cout << "Enter Choice: \n";
@@ -252,7 +205,7 @@ void displayDict(int page, int perPage, int category = 4)
             switch (category)
             {
             case 1:
-                if (strcmp(entries[start].acronym, " ") == 0)
+		if (strcmp(entries[start].acronym, " ") == 0)
                     cout << setw(3) << start + 1 << setw(15) << entries[start].word << setw(15) << entries[start].changedWord << endl;
                 break;
             case 2:
@@ -310,13 +263,13 @@ void dict()
             break;
         case 4:
             clrscr();
-            if (wordCount >= max_entries)
+            if (wordCount >= max_words)
             {
                 cout << "Database is full.\n";
                 return;
             }
             cout << "Choose Category\n";
-            cout << "1.Changed entries" << endl;
+            cout << "1.Changed Words" << endl;
             cout << "2.Acronym" << endl;
             cout << "3.Both" << endl;
             cin >> choice;
@@ -408,30 +361,33 @@ void adminMenu()
             addAndEdit();
             break;
         case 2:
+            categorize();
+            break;
+        case 3:
             approval();
             break;
-        // case 3:
-        //     readFeedback();
-        //     break;
-        case 3:
+        case 4:
+            feedback();
+            break;
+        case 5:
             manageUsers();
             break;
-        case 4:
+        case 6:
             clrscr();
             backup();
             cout << "Backup Success";
             getch();
             break;
-        case 5:
+        case 7:
             clrscr();
             restore();
             cout << "Restore Success";
             getch();
             break;
-        case 6:
+        case 8:
             mainMenu();
             break;
-        case 7:
+        case 9:
             backup();
             exit(0);
         default:
@@ -453,14 +409,11 @@ void userMenu()
         switch (choice)
         {
         case 1:
-            search_entries();
+            cout << "searchWords();" << "\n";
             break;
         case 2:
             dict();
             break;
-        // case 3:
-        //     writeFeedback();
-        //     break;
         case 3:
             return;
         case 4:
@@ -598,13 +551,13 @@ void addAndEdit()
             break;
         case 4:
             clrscr();
-            if (wordCount >= max_entries)
+            if (wordCount >= max_words)
             {
                 cout << "Database is full.\n";
                 return;
             }
             cout << "Choose Category\n";
-            cout << "1.Changed entries" << endl;
+            cout << "1.Changed Words" << endl;
             cout << "2.Acronym" << endl;
             cout << "3.Both" << endl;
             cin >> choice;
@@ -674,7 +627,7 @@ void addAndEdit()
     adminMenu();
 }
 
-// ok na
+// aayusin pa
 int categorize()
 {
     int opt;
@@ -691,7 +644,7 @@ int categorize()
 void approval()
 {
     clrscr();
-    cout << "entries awaiting approval:\n";
+    cout << "Words awaiting approval:\n";
     for (int i = 0; i < wordCount; i++)
     {
         if (!entries[i].approved)
@@ -742,41 +695,28 @@ void approval()
     approval();
 }
 // incomplete need user to create feedback
-// void writeFeedback() {
-//     if (feedbackCount >= 100) {
-//         cout << "Feedback array is full. Cannot accept more feedback.\n";
-//         return;
-//     }
+void feedback()
+{ // OK NA NAGANA NA BOI
+    clrscr();
+    ifstream feedbackFile("feedback.txt");
+    if (!feedbackFile)
+    {
+        cout << "No feedback available.\n";
+        getch();
+        return;
+    }
 
-//     cout << "Enter feedback content: ";
-//     cin.getline(feedbacks[feedbackCount].content, max_length);
-
-//     cout << "Enter your username: ";
-//     cin.getline(feedbacks[feedbackCount].username, max_length);
-
-//     feedbackCount++; // Increment the count of feedback entries
-//     cout << "Feedback successfully submitted.\n";
-// }
-// void readFeedback() {
-//     int ind;
-//     for (int i = 0; i < feedbackCount; i++) {
-//         cout << i<<". Feedback from " << feedbacks[i].username << ": " << feedbacks[i].content << endl;
-//     }
-//     cout << "Choose index to delete: " ;
-//     cin>>ind;
-//     deleteFeedback(ind);
-//     getch();
-// }
-// void deleteFeedback(int index) {
-//     if (index < 0 && index < feedbackCount) {
-//         for (int i = index; i < feedbackCount - 1; i++) {
-//             feedbacks[i] = feedbacks[i + 1];
-//         }
-//         feedbackCount--;
-//     } else {
-//         cout << "Invalid index.\n";
-//     }
-// }
+    char line[100];
+    while (feedbackFile.getline(line, 100))
+    {
+        cout << line << "\n";
+        cout << "Press any key to back to admin menu.";
+        getch();
+        adminMenu();
+    }
+    feedbackFile.close();
+    getch();
+}
 // complete??
 void manageUsers()
 {
@@ -834,124 +774,14 @@ void manageUsers()
 // complete
 void backup()
 {
-    // saveFeedback();
+
     saveDatabase();
     saveUsers();
 }
 // complete
 void restore()
 {
-    // loadFeedback();
+
     loadDatabase();
     loadUsers();
-}
-void search_entries()
-{
-    clrscr();
-    char search[100];
-    int found = 1;
-
-    cout << "Search by: [1] Word, [2] Changed Word, or [3] Acronym" << endl;
-    cout << ": ";
-    cin >> choice;
-    cout << "Search: ";
-    gets(search);
-
-    cout << setw(15) << "Word" << setw(15) << "GenZ" << setw(15) << "Acronym" << endl;
-    switch (choice)
-    {
-    case 1:
-        for (i = 0; i < wordCount; i++)
-        {
-            if (strcmp(entries[i].word, search) == 0)
-            {
-                cout << setw(15) << entries[i].word;
-                if (strcmp(entries[i].changedWord, " ") != 0 && strcmp(entries[i].acronym, " ") != 0)
-                {
-                    cout << setw(15) << entries[i].changedWord << setw(15) << entries[i].acronym;
-                }
-                else if (!strcmp(entries[i].changedWord, " ") == 0)
-                {
-                    cout << setw(15) << entries[i].changedWord;
-                }
-                else if (!strcmp(entries[i].acronym, " ") == 0)
-                {
-                    cout << setw(30) << entries[i].acronym;
-                }
-                
-                cout << endl;
-                found = 0;
-            }
-        }
-            if (found)
-            {
-                cout << "Word not found.\n";
-                getch();
-            }
-        getch();
-        break;
-    case 2:
-        for (i = 0; i < wordCount; i++)
-        {
-            if (strcmp(entries[i].changedWord, search) == 0)
-            {
-                cout << setw(15) << entries[i].word;
-                if (strcmp(entries[i].changedWord, " ") != 0 && strcmp(entries[i].acronym, " ") != 0)
-                {
-                    cout << setw(15) << entries[i].changedWord << setw(15) << entries[i].acronym;
-                }
-                else if (!strcmp(entries[i].changedWord, " ") == 0)
-                {
-                    cout << setw(15) << entries[i].changedWord;
-                }
-                else if (!strcmp(entries[i].acronym, " ") == 0)
-                {
-                    cout << setw(30) << entries[i].acronym;
-                }
-                
-                cout << endl;
-                found = 0;
-            }
-        }
-            if (found)
-            {
-                cout << "Word not found.\n";
-                getch();
-            }
-        getch();
-        break;
-    case 3:
-        for (i = 0; i < wordCount; i++)
-        {
-            if (strcmp(entries[i].acronym, search) == 0)
-            {
-                cout << setw(15) << entries[i].word;
-                if (strcmp(entries[i].changedWord, " ") != 0 && strcmp(entries[i].acronym, " ") != 0)
-                {
-                    cout << setw(15) << entries[i].changedWord << setw(15) << entries[i].acronym;
-                }
-                else if (!strcmp(entries[i].changedWord, " ") == 0)
-                {
-                    cout << setw(15) << entries[i].changedWord;
-                }
-                else if (!strcmp(entries[i].acronym, " ") == 0)
-                {
-                    cout << setw(30) << entries[i].acronym;
-                }
-                
-                cout << endl;
-                found = 0;
-            }
-        }
-            if (found)
-            {
-                cout << "Word not found.\n";
-                getch();
-            }
-        getch();
-        break;
-    default:
-        cout << "Invalid Input.\n";
-        return;
-    }
 }
